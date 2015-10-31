@@ -1,0 +1,49 @@
+1.该脚本用来做版本回退
+
+2.具体使用步骤如下
+  在代码所在的目录下执行脚本,并附带时间和清单文件名两个参数
+  比如在dlxu-gram目录下:./VersionBack "2015-06-06" "dlxu"
+  这样就成功执行了脚本. 
+  注意: 
+     A.时间中月份和日期不足十位数要补零.
+     B.在版本回退的过程中,可能有新的库添加进来,脚本会进行自动提醒,但是需要手动完成新添加库的下载.如下所示就是缺少
+       gaia/wilhelm库 
+        [Errno 2] No such file or directory: '/work/dlux-gram/gaia/wilhelm'
+        No /work/dlux-gram/gaia/wilhelm repo please download
+	XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	X             I am sorry VersionBack Unsuccess               X
+	XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+     
+     C.当所用的库都回退到指定日期时后,脚本会自动进行copyfile操作,需要输入用户口令,如下所示
+	=============================================================
+	|             Congratulation VersionBack Success            |
+	=============================================================
+	device/htc/dlxu
+	[sudo] password for jiashi: 
+
+     D.一切正常的话就会出现以下提示信息,至此就可以开始编译源码了:
+       =============================================================
+       |             CopyFile OK  Now you can build                |
+       =============================================================
+     
+     E.由于dlxu-gram下大致在3月分对清单文件做了调整,会导致脚本执行出现问题,需要进行3的操作,重新指定清单文件的路径.
+
+3.若要回退其他平台代码,需要修改脚本脚本中的Init函数,参考该平台代码下的清单文件手动指定清单文件的路径:
+    def Init():
+    cdir0=".repo/manifests"
+    versionBack(cdir0)
+    cdir=[]
+    cdir1=os.getcwd()+"/.repo/manifests/"+sys.argv[2]+".xml"
+    cdir2=os.getcwd()+"/.repo/manifests/internal/_gaia.xml"
+    cdir3=os.getcwd()+"/.repo/manifests/internal/_prebuilts.xml"
+    cdir4=os.getcwd()+"/.repo/manifests/internal/_external.xml"
+    cdir5=os.getcwd()+"/.repo/manifests/internal/_device.xml"
+    cdir.append(cdir1)
+    cdir.append(cdir2)
+    cdir.append(cdir3)
+    cdir.append(cdir4)
+    cdir.append(cdir5)
+    for i in cdir:
+        getProjectPath(i)  
+  
+4.该脚本回退后的代码并不能直接一次编译通过,编译时大部分问题会出现在gaia库下,需要自己根据编译的错误提示来对相应的库做微小的调 整.  
